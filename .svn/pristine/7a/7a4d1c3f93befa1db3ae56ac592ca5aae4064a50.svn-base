@@ -1,0 +1,429 @@
+package view;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import javax.swing.ButtonGroup;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JColorChooser;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JSlider;
+import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
+import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
+
+import model.Ellipse;
+import model.Line;
+import model.Pencil;
+import model.Rectangle;
+
+/**
+ * The graphical user interface for the powerPoint program.
+ *
+ * @author mohibkohi
+ * @version 1.0.
+ */
+public class PowerPaintGUI extends JFrame {
+    
+    
+    /**
+     * The serial version UID.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * A UWT icon from an image file.
+     */
+    private static final Icon PENCIL = new ImageIcon("./images/pencil_bw.gif");
+    
+    /**
+     * A UWT icon from an image file.
+     */
+    private static final ImageIcon LINE = new ImageIcon("./images/line_bw.gif");
+    
+    /**
+     * A UWT icon from an image file.
+     */
+    private static final ImageIcon RECTANGLE = new ImageIcon("./images/rectangle_bW.gif");
+    
+    /**
+     * A UWT icon from an image file.
+     */
+    private static final ImageIcon ELLIPSE = new ImageIcon("./images/ellipse_bw.gif");
+
+    /**
+     * The initial frames at which the thickness will be drawn.
+     */
+    private static final int INITIAL_FRAMES = 5;
+    
+    /**
+     * The maximum frames at which the thickness will be drawn.
+     */
+    private static final int MAX_FRAMES = 20;
+    
+    /**
+     * The minor tick spacing for the FPS slider.
+     */
+    private static final int MINOR_TICK_SPACING = 1;
+    
+    /**
+     * The major tick spacing for the FPS slider.
+     */
+    private static final int MAJOR_TICK_SPACING = 5;
+    
+    
+    /**
+     * A UWT icon from an image file.
+     */
+    private static final ImageIcon UW = new ImageIcon("src/icons/uw.png");
+    
+    /**
+     * Pencil instance field name.
+     */
+    private final String myPencil = "Pencil";
+
+    /**
+     * Line instance field name.
+     */
+    private final String myLine = "Line";
+
+    /**
+     * Rectangle instance field name.
+     */
+    private final String myRectangle = "Rectangle";
+
+    /**
+     * Ellipse instance field name.
+     */
+    private final String myEllipse = "Ellipse";
+
+    /**
+     * Undo button.
+     */
+    private final JMenuItem myUndoMenuItem;
+    
+    /**
+     * Ellipse instance field name.
+     */
+    private final String myAbout = "About";
+    
+    /**
+     * Instance myColor.
+     */
+    private Color myColor = new Color(51, 0, 111);
+    
+    /**
+     * 
+     */
+    private int myStroke;
+    
+    /**
+     * menu bar.
+     */
+    private JMenuBar myMenuBar;
+
+    /**
+     * Set my perfect shape.
+     */
+    private boolean myPerfectShape;
+    
+    /**
+     * Drawing area.
+     */
+    private final DrawingPanel myDrawingArea;
+    
+    /**
+     * Constructs a new PowerPointGUI, using the files in the current working
+     * directory.
+     */
+    public PowerPaintGUI() {
+        super("PowerPaint");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setIconImage(UW.getImage());
+        
+        myUndoMenuItem = new JMenuItem("Undo");
+        myDrawingArea = new DrawingPanel();
+        
+        setUpComponents();
+        
+        pack();
+        setVisible(true);
+    }
+
+    /**
+     * Lay out the components.
+     */
+    public final void setUpComponents() {
+        createMenuBar();
+        add(createToolBar(), BorderLayout.SOUTH);
+        
+        //Create drawing area.
+        add(myDrawingArea, BorderLayout.CENTER);
+    }
+
+    /**
+     * Method to create the menu bar.
+     */
+    private void createMenuBar() {
+        myMenuBar = new JMenuBar();
+        setJMenuBar(myMenuBar);
+     
+        createFileMenu();
+        createOptionsMenu();
+        createToosMenu();
+        crateHelpMenu();
+    }
+
+    /**
+     * Create file menu.
+     */
+    private void createFileMenu() {
+        final JMenu fileMenu = new JMenu("File");
+        
+        fileMenu.addMenuListener(new SampleMenuListener());
+        
+        myUndoMenuItem.setMnemonic(KeyEvent.VK_U);
+        fileMenu.setMnemonic(KeyEvent.VK_F);
+        if (myUndoMenuItem.isEnabled()) {
+            myUndoMenuItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(final ActionEvent theEvent) {
+                    myDrawingArea.emptyTheList();
+                }
+            });
+        }
+
+        final JMenuItem exitMenuItem = new JMenuItem("Exit");
+        exitMenuItem.setMnemonic(KeyEvent.VK_X);
+
+        exitMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(final ActionEvent theEvent) {
+                dispose();
+            }
+        });
+
+        fileMenu.add(myUndoMenuItem);
+        fileMenu.addSeparator();
+        fileMenu.add(exitMenuItem);
+        myMenuBar.add(fileMenu);
+    }
+
+    
+    /**
+     * Create option menu.
+     */
+    private void createOptionsMenu() {
+        final JMenu optionsMenu = new JMenu("Options");
+        optionsMenu.setMnemonic(KeyEvent.VK_O);
+        
+        final JCheckBoxMenuItem squreOrCircleCheck
+                = new JCheckBoxMenuItem("Square/Circle only");
+        squreOrCircleCheck.setMnemonic(KeyEvent.VK_S);
+        
+        squreOrCircleCheck.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(final ActionEvent theEvent) {
+                if (squreOrCircleCheck.getState()) {
+                    myDrawingArea.setPrefectShape(true);
+                } else {
+                    myDrawingArea.setPrefectShape(false);
+                }
+            }
+        });
+        
+        final JMenu thicknessMenuItem = new JMenu("Thickness");
+        thicknessMenuItem.setMnemonic(KeyEvent.VK_T);
+
+        final JSlider thicknessSlider = new JSlider(SwingConstants.HORIZONTAL, 0, MAX_FRAMES,
+                                                    INITIAL_FRAMES);
+        thicknessSlider.setMajorTickSpacing(MAJOR_TICK_SPACING);
+        thicknessSlider.setMinorTickSpacing(MINOR_TICK_SPACING);
+        thicknessSlider.setPaintLabels(true);
+        thicknessSlider.setPaintTicks(true);
+        thicknessSlider.addChangeListener(new ChangeListener() {
+            /** Called in response to slider events in this window. */
+            @Override
+            public void stateChanged(final ChangeEvent theEvent) {
+                myStroke = thicknessSlider.getValue();
+                myDrawingArea.setStroke(myStroke);
+            }
+        });
+        
+        thicknessMenuItem.add(thicknessSlider);
+
+        final JMenuItem colorMenuItem = new JMenuItem("Color");
+        colorMenuItem.setMnemonic(KeyEvent.VK_C);
+        colorMenuItem.setIcon(new IconClass(myColor));
+        
+        colorMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(final ActionEvent theEvent) {
+                myColor = JColorChooser.showDialog(PowerPaintGUI.this,
+                                "Choose a color", myColor);
+                if (myColor == null) {
+                    myColor = Color.lightGray;
+                }
+                colorMenuItem.setIcon(new IconClass(myColor));
+                myDrawingArea.setColor(myColor);
+                repaint();
+            }
+        });
+        optionsMenu.add(squreOrCircleCheck);
+        optionsMenu.addSeparator();
+        optionsMenu.add(thicknessMenuItem);
+        optionsMenu.addSeparator();
+        optionsMenu.add(colorMenuItem);
+        myMenuBar.add(optionsMenu);
+    }
+
+    /**
+     * A helper method to make a ToolBar.
+     * 
+     * @return the example Tool Bar
+     */
+    private JToolBar createToolBar() {
+        final JToolBar toolbar = new JToolBar();
+        
+        final ButtonGroup buttonGroup = new ButtonGroup();
+        
+        final JToggleButton pencilButton = new JToggleButton(myPencil, PENCIL);
+        final JToggleButton lineButton = new JToggleButton(myLine, LINE);
+        final JToggleButton rectangleButton = new JToggleButton(myRectangle, RECTANGLE);
+        final JToggleButton ellipseButton = new JToggleButton(myEllipse, ELLIPSE);
+        
+        pencilButton.addActionListener(new ActionListener()  {
+            public void actionPerformed(final ActionEvent theEvent) {
+                myDrawingArea.setTool(new Pencil());
+            }
+        });
+        
+        lineButton.addActionListener(new ActionListener()  {
+            public void actionPerformed(final ActionEvent theEvent) {
+                myDrawingArea.setTool(new Line());
+            }
+        });
+        
+        rectangleButton.addActionListener(new ActionListener()  {
+            public void actionPerformed(final ActionEvent theEvent) {
+                myDrawingArea.setTool(new Rectangle());
+            }
+        });
+        
+        ellipseButton.addActionListener(new ActionListener()  {
+            public void actionPerformed(final ActionEvent theEvent) {
+                myDrawingArea.setTool(new Ellipse());
+            }
+        });
+        
+        pencilButton.setSelected(true);
+        
+        buttonGroup.add(pencilButton);
+        buttonGroup.add(lineButton);
+        buttonGroup.add(rectangleButton);
+        buttonGroup.add(ellipseButton);
+        
+        toolbar.add(pencilButton);
+        toolbar.add(lineButton);
+        toolbar.add(rectangleButton);
+        toolbar.add(ellipseButton);
+        
+        buttonGroup.clearSelection();
+        return toolbar;
+    }
+    
+    
+    /**
+     * Create the menu for tools.
+     */
+    private void createToosMenu() {
+        final JMenu toolsMenu = new JMenu("Tools");
+        final ButtonGroup jRadioGroup = new ButtonGroup();
+        
+        toolsMenu.setMnemonic(KeyEvent.VK_T);
+
+        final JRadioButtonMenuItem pencilRadioButton = new JRadioButtonMenuItem(myPencil);
+        pencilRadioButton.setMnemonic(KeyEvent.VK_P);
+
+        final JRadioButtonMenuItem lineRadioButton = new JRadioButtonMenuItem(myLine);
+        lineRadioButton.setMnemonic(KeyEvent.VK_L);
+
+        final JRadioButtonMenuItem rectRadioButton = new JRadioButtonMenuItem(myRectangle);
+        rectRadioButton.setMnemonic(KeyEvent.VK_R);
+
+        final JRadioButtonMenuItem ellipseRadioButton = new JRadioButtonMenuItem(myEllipse);
+        ellipseRadioButton.setMnemonic(KeyEvent.VK_E);
+        
+        jRadioGroup.add(pencilRadioButton);
+        jRadioGroup.add(lineRadioButton);
+        jRadioGroup.add(rectRadioButton);
+        jRadioGroup.add(ellipseRadioButton);
+        //jRadioGroup.clearSelection();
+        pencilRadioButton.setSelected(true);
+        toolsMenu.add(pencilRadioButton);
+        toolsMenu.add(lineRadioButton);
+        toolsMenu.add(rectRadioButton);
+        toolsMenu.add(ellipseRadioButton);
+        myMenuBar.add(toolsMenu);
+    }
+
+    
+    /**
+     * Create help menu.
+     */
+    private void crateHelpMenu() {
+        final JMenu helpMenu = new JMenu("Help");
+        helpMenu.setMnemonic(KeyEvent.VK_H);
+
+        final JMenuItem aboutMenu = new JMenuItem(myAbout);
+        aboutMenu.setMnemonic(KeyEvent.VK_A);
+
+        aboutMenu.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(final ActionEvent theEvent) {
+                JOptionPane.showMessageDialog(null,
+                        "TCSS 305 PowerPoint\nWinter 2016\nMohib Kohi",
+                        myAbout, JOptionPane.PLAIN_MESSAGE, UW);
+            }
+        });
+        helpMenu.add(aboutMenu);
+        myMenuBar.add(helpMenu);
+    }
+    
+    /**
+     * 
+     * @author mohibkohi
+     * @version 1.0.
+     */
+    class SampleMenuListener implements MenuListener {
+        @Override
+        public void menuSelected(final MenuEvent theEvent) {
+            if (myDrawingArea.getListSize() > 0) {
+                myUndoMenuItem.setEnabled(true);
+            } else {
+                myUndoMenuItem.setEnabled(false);
+            }
+        }
+        @Override
+        public void menuDeselected(final MenuEvent theEvent) {
+        }
+
+        @Override
+        public void menuCanceled(final MenuEvent theEvent) {
+        }
+    }
+
+}

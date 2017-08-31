@@ -1,0 +1,232 @@
+package view;
+
+import java.awt.BasicStroke;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.event.MouseEvent;
+//import java.awt.geom.Line2D.Double;
+import java.awt.geom.Line2D;
+//import java.awt.geom.Path2D;
+//import java.awt.geom.Point2D;
+import java.awt.geom.Point2D;
+
+import javax.swing.ButtonGroup;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JPanel;
+import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
+import javax.swing.event.MouseInputAdapter;
+
+
+/**
+ * Drawing area class, extends JPanel. 
+ * @author mohibkohi
+ * @version 1.0.
+ */
+public class DrawingPanel extends JPanel {
+    
+    /**
+     * The line width.
+     */
+    public static final int LINE_WIDTH = 5;
+    
+    /**
+     * A UWT icon from an image file.
+     */
+    private static final Icon PENCIL = new ImageIcon("./images/pencil_bw.gif");
+    
+    /**
+     * A UWT icon from an image file.
+     */
+    private static final ImageIcon LINE = new ImageIcon("./images/line_bw.gif");
+    
+    /**
+     * A UWT icon from an image file.
+     */
+    private static final ImageIcon RECTANGLE = new ImageIcon("./images/rectangle_bW.gif");
+    
+    /**
+     * A UWT icon from an image file.
+     */
+    private static final ImageIcon ELLIPSE = new ImageIcon("./images/ellipse_bw.gif");
+
+    /**
+     * The color to paint with.
+     */
+    //public static final Color FOREGROUND_COLOR = ;
+    
+    /**
+     * A generated serialization ID.
+     */
+    private static final long serialVersionUID = 1L;
+    
+    /**
+     * The size in pixels of a side of one "square" on the grid.
+     */
+    private static final int WIDTH = 500;
+
+    /**
+     * The size in pixels of the directional markers drawn on vehicles in debug
+     * mode.
+     */
+    private static final int HEIGHT = 400;
+    
+    /**
+     * The path being created.
+     */
+    private Line2D myPath;
+    
+    /**
+     * Field to determine if mouse was pressed.
+     */
+    private boolean myMousePressed;
+    
+    /**
+     * Constructor drawing panel sets up components.
+     */
+    public DrawingPanel() {
+        super(new BorderLayout());
+        myPath = new Line2D.Double();
+        setUpComponents();
+    }
+    
+    /**
+     * 
+     */
+    private void setUpComponents() {
+        final MouseInputAdapter mouseAdapter = new MyMouseListener();
+        addMouseListener(mouseAdapter);
+        addMouseMotionListener(mouseAdapter);
+        
+        setBackground(Color.white);
+        add(createToolBar(), BorderLayout.SOUTH);
+        
+        setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+    }
+    
+    /**
+     * Paints the current path.
+     * 
+     * @param theGraphics The graphics context to use for painting.
+     */
+    @Override
+    public void paintComponent(final Graphics theGraphics) {
+        super.paintComponent(theGraphics);
+        final Graphics2D g2d = (Graphics2D) theGraphics;
+        
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                             RenderingHints.VALUE_ANTIALIAS_ON);
+        final Color colorPurple = new Color(51, 0, 111);
+        g2d.setPaint(colorPurple);
+        g2d.setStroke(new BasicStroke(LINE_WIDTH));
+        if (myMousePressed) {
+            g2d.draw(myPath);
+        }
+    }
+    
+    /**
+     * A helper method to make a ToolBar.
+     * 
+     * @return the example Tool Bar
+     */
+    private JToolBar createToolBar() {
+        final JToolBar toolbar = new JToolBar();
+        
+        final ButtonGroup buttonGroup = new ButtonGroup();
+        
+        final JToggleButton pencilButton = new JToggleButton("Pencil", PENCIL);
+        final JToggleButton lineButton = new JToggleButton("Line", LINE);
+        final JToggleButton rectangleButton = new JToggleButton("Rectangle", RECTANGLE);
+        final JToggleButton ellipseButton = new JToggleButton("Ellipse", ELLIPSE);
+        
+        pencilButton.setSelected(true);
+        
+        buttonGroup.add(pencilButton);
+        buttonGroup.add(lineButton);
+        buttonGroup.add(rectangleButton);
+        buttonGroup.add(ellipseButton);
+        
+        toolbar.add(pencilButton);
+        toolbar.add(lineButton);
+        toolbar.add(rectangleButton);
+        toolbar.add(ellipseButton);
+        
+        
+       // buttonGroup.clearSelection();
+        return toolbar;
+    }
+ // Inner Class
+
+    /**
+     * Listens for mouse clicks, to draw on our panel.
+     */
+    private class MyMouseListener extends MouseInputAdapter {
+        /**
+         * Start point for the Line.
+         */
+        private Point2D myStart;
+        
+        /**
+         * End point for the Line.
+         */
+        private Point2D myEnd;
+        
+        /**
+         * myMiddle point for the point.
+         */
+        private Point2D myMiddle;
+        /**
+         * Handles a click event.
+         * 
+         * @param theEvent The event.
+         */
+        @Override
+        public void mouseDragged(final MouseEvent theEvent) {
+            //for the Pencil
+            //myPath.lineTo(theEvent.getX(), theEvent.getY());
+         
+            myMiddle = theEvent.getPoint();
+            myPath.setLine(myStart, myMiddle);
+            
+            repaint();
+        }
+        
+        /**
+         * Handles a click event.
+         * 
+         * @param theEvent The event.
+         */
+        @Override
+        public void mousePressed(final MouseEvent theEvent) {
+            //for the pencil
+           //myPath.moveTo(theEvent.getX(), theEvent.getY());
+            myMousePressed = true;
+            myStart = theEvent.getPoint();
+            
+            //myPath.setLine(start, start);
+            
+            //repaint();
+        }
+        
+        /**
+         * Handles a click event.
+         * 
+         * @param theEvent The event.
+         */
+        @Override
+        public void mouseReleased(final MouseEvent theEvent) {
+            myEnd = theEvent.getPoint();
+            
+            myPath.setLine(myStart, myEnd);
+            repaint();
+        }
+    }
+    
+}

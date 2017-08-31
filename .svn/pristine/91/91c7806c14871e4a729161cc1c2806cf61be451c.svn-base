@@ -1,0 +1,171 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package model;
+
+import java.awt.Shape;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+
+/**
+ *
+ * @author mohibkohi
+ * @version 1.0.
+ */
+public class Rectangle extends AbstractTool implements Tool {
+
+    //solid state drive for where the hard drive is
+    //upgrading the ram
+    /**
+     * Start point for the Line.
+     */
+    private Point2D myStart;
+
+    /**
+     * End point for the Line.
+     */
+    private Point2D myEnd;
+
+    /**
+     * myMiddle point for the point.
+     */
+    private Point2D myMiddle;
+
+    /**
+     * The path being created.
+     */
+    private Rectangle2D myPath;
+
+    /**
+     * Set my perfect shape.
+     */
+    private boolean myPerfectShape;
+
+    /**
+     * Constructor sets the initial path.
+     *
+     * @param thePerfectShape set the perfect shape.
+     */
+    public Rectangle() {
+        myPath = new Rectangle2D.Double();
+    }
+
+    public Shape getPressed(final Point2D thePoint, final boolean thePerfect) {
+        myPerfectShape = thePerfect;
+        myStart = thePoint;
+        myPath.setFrameFromDiagonal(myStart.getX(), myStart.getY(), 0, 0);
+        return myPath;
+    }
+    
+    /**
+     * Resizes the shape as mouse moved.
+     * @param thePoint to move the shape.
+     * @return the moved shape.
+     */
+    public Shape getDragged(final Point2D thePoint) {
+        myMiddle = thePoint;
+        double movingXDistance;
+        double movingYDistance;
+        movingXDistance = myMiddle.getX() - myStart.getX();
+        movingYDistance = myMiddle.getY() - myStart.getY();
+
+        if (myPerfectShape) {
+            if (movingXDistance > 0 || movingXDistance == 0) {
+                if (movingYDistance < 0) {
+                    moveMyShapFirstQuad(movingYDistance, movingXDistance);
+                } else {
+                    moveMyShapFourthQuad(movingXDistance, movingYDistance);
+                }
+            } else if (movingXDistance < 0) {
+                if (movingYDistance < 0 || movingYDistance == 0) {
+                    moveMyShapSecondQuad(movingXDistance, movingYDistance);
+                } else {
+                    moveMyShapThirdQuad(movingYDistance, movingXDistance);
+                }
+            }
+
+        } else {
+            myPath.setFrameFromDiagonal(myStart.getX(), myStart.getY(),
+                    myMiddle.getX(), myMiddle.getY());
+        }
+        return myPath;
+    }
+
+    private void moveMyShapFirstQuad(double theYDistance, double theXDistance) {
+        double differece = Math.abs(theYDistance);
+        if (differece > theXDistance) {
+            myPath.setFrameFromDiagonal(myStart.getX(), myStart.getY(),
+                    differece + myStart.getX(),
+                    myStart.getY() - differece);
+        } else {
+            myPath.setFrameFromDiagonal(myStart.getX(), myStart.getY(),
+                    theXDistance + myStart.getX(),
+                    myStart.getY() - theXDistance);
+        }
+    }
+
+    private void moveMyShapSecondQuad(double theYDistance, double theXDistance) {
+        if (theYDistance > theXDistance) {
+            myPath.setFrameFromDiagonal(myStart.getX(), myStart.getY(),
+                    (myStart.getX() + theXDistance),
+                    myStart.getY() + theXDistance);
+        } else {
+            myPath.setFrameFromDiagonal(myStart.getX(), myStart.getY(),
+                    (myStart.getX() + theYDistance),
+                    myStart.getY() + theYDistance);
+        }
+    }
+
+    private void moveMyShapThirdQuad(double theYDistance, double theXDistance) {
+        double differece = Math.abs(theXDistance);
+
+        if (theYDistance < differece) {
+            myPath.setFrameFromDiagonal(myStart.getX(), myStart.getY(),
+                    (myStart.getX() - differece),
+                    myStart.getY() + differece);
+        } else {
+            myPath.setFrameFromDiagonal(myStart.getX(), myStart.getY(),
+                    (myStart.getX() - theYDistance),
+                    myStart.getY() + theYDistance);
+        }
+    }
+    
+    private void moveMyShapFourthQuad(double theYDistance, double theXDistance) {
+        if (theYDistance < theXDistance) {
+            myPath.setFrameFromDiagonal(myStart.getX(), myStart.getY(),
+                    (myStart.getX() + theXDistance),
+                    myStart.getY() + theXDistance);
+        } else {
+            myPath.setFrameFromDiagonal(myStart.getX(), myStart.getY(),
+                    (myStart.getX() + theYDistance),
+                    myStart.getY() + theYDistance);
+        }
+    }
+
+    
+
+    /**
+     * Method set the path on mouse release.
+     *
+     * @param thePoint to be drawn on.
+     * @return myPath to draw the shape on.
+     */
+    public Shape getReleased(final Point2D thePoint) {
+        myEnd = thePoint;
+        myPath.setFrameFromDiagonal(myStart.getX(), myStart.getY(),
+                myEnd.getX(), myEnd.getY());
+        return myPath;
+    }
+
+    @Override
+    public Shape getShape() {
+        return myPath;
+    }
+
+    public void newConstructor() {
+        Rectangle rectangle = new Rectangle();
+        myPath = rectangle.myPath;
+    }
+}

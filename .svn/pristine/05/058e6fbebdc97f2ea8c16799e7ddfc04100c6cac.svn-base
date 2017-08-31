@@ -1,0 +1,92 @@
+package model;
+
+import java.awt.Shape;
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
+
+
+/**
+ * Line class to draw a line.
+ * @author mohibkohi
+ * @version 1.0.
+ */
+public class Line extends AbstractTool implements Tool {
+    
+    /**
+     * Start point for the Line.
+     */
+    private Point2D myStart;
+    
+    /**
+     * End point for the Line.
+     */
+    private Point2D myEnd;
+    
+    /**
+     * myMiddle point for the point.
+     */
+    private Point2D myMiddle;
+    
+    /**
+     * The path being created.
+     */
+    private Line2D myPath;
+    
+    /**
+     * Set my perfect shape.
+     */
+    private boolean myPerfectShape;
+    
+    //private DrawingPanel myDrawArea;
+    
+    /**
+     * @return .
+     */
+    public Line() {
+       // myDrawArea = new DrawingPanel();
+        myPath = new Line2D.Double();
+    }
+    
+    /**
+     * @return .
+     */
+    public Shape getDragged(final Point2D the2DPoint) {
+        
+        myPath.setLine(myStart, the2DPoint);
+        return myPath;
+    }
+    
+    /**
+     * @return .
+     */
+    public Shape getPressed(final Point2D the2DPoint, final boolean thePerfect) {
+        myPerfectShape = thePerfect;
+        myStart = the2DPoint;
+        myPath.setLine(myStart, the2DPoint);
+        return myPath;
+    }
+    
+    /**
+     * @return .
+     */
+    public Shape getReleased(final Point2D the2DPoint) {
+        myEnd = the2DPoint;
+        myPath.setLine(myStart, myEnd);
+        return myPath;
+    }
+    
+    @Override
+    public Shape getShape() {
+        return myPath;
+    }
+    
+    /**
+     *  .
+     */
+    public void newConstructor() {
+        final Line line = new Line();
+        myPath = line.myPath;
+    }
+}
+
+

@@ -1,0 +1,229 @@
+package view;
+
+import java.awt.BasicStroke;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.event.MouseEvent;
+import java.awt.geom.Line2D;
+import java.util.ArrayList;
+
+import javax.swing.JPanel;
+import javax.swing.event.MouseInputAdapter;
+
+import model.Line;
+import model.Shapes;
+import model.Tool;
+
+
+/**
+ * Drawing area class, extends JPanel. 
+ * @author mohibkohi
+ * @version 1.0.
+ */
+public class DrawingPanel extends JPanel {
+    
+    /**
+     * The line width.
+     */
+    public static final int LINE_WIDTH = 5;
+    
+    /**
+     * A generated serialization ID.
+     */
+    private static final long serialVersionUID = 1L;
+    
+    /**
+     * The size in pixels of a side of one "square" on the grid.
+     */
+    private static final int WIDTH = 500;
+
+    /**
+     * The size in pixels of the directional markers drawn on vehicles in debug
+     * mode.
+     */
+    private static final int HEIGHT = 400;
+    
+    /**
+     * List of the drawn shapes.
+     */
+    private ArrayList<Shapes> myDrawnShapes;
+    
+    /**
+     * My current drawing myTool.
+     */
+    private Tool myTool;
+    
+    /**
+     * UW initial color.
+     */
+    private Color myColor = new Color(51, 0, 111);
+    
+    /**
+     * Initial Stroke.
+     */
+    private int myStroke = 5; 
+    
+    /**
+     * The path being created.
+     */
+    private Shape myPath;
+    
+    /**
+     * My perfect shape.
+     */
+    private boolean myPerfectShape;
+    
+    /**
+     * Shape reference to shpaes class.
+     */
+    private Shapes myShape;
+    
+    /**
+     * Constructor drawing panel sets up components.
+     */
+    public DrawingPanel() {
+        super(new BorderLayout());
+        myDrawnShapes = new ArrayList();
+        myTool = new Line();
+        myPath = new Line2D.Double();
+        setUpComponents();
+    }
+    
+    /**
+     * 
+     */
+    private void setUpComponents() {
+        final MouseInputAdapter mouseAdapter = new MyMouseListener();
+        addMouseListener(mouseAdapter);
+        addMouseMotionListener(mouseAdapter);
+        
+        setBackground(Color.white);
+        
+        
+        setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+    }
+    
+    
+    /**
+     * Undo all the list.
+     */
+    public void emptyTheList() {
+        myDrawnShapes.clear();
+        repaint();
+    }
+    
+    /**
+     * Returns the size of the arraylist shapes.
+     * @return size of the list.
+     */
+    public int getListSize() {
+        return myDrawnShapes.size();
+    }
+    
+    /**
+     * 
+     * @param theTool
+     */
+    public void setTool(final Tool theTool) {
+        myTool = theTool;
+    }
+    
+    /**
+     * 
+     * @param theStroke
+     */
+    public void setStroke(int theStroke) {
+        myStroke = theStroke;
+    }
+    
+    /**
+     * 
+     * @param theColor
+     */
+    public void setColor(Color theColor) {
+        myColor = theColor;
+    }
+    
+    
+    
+    /**
+     * Paints the current path.
+     * 
+     * @param theGraphics The graphics context to use for painting.
+     */
+    @Override
+    public void paintComponent(final Graphics theGraphics) {
+        super.paintComponent(theGraphics);
+        final Graphics2D g2d = (Graphics2D) theGraphics;
+        
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                             RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setPaint(myColor);
+        g2d.setStroke(new BasicStroke(LINE_WIDTH));
+        
+        for (Shapes i: myDrawnShapes) {
+            g2d.setPaint(i.getColor());
+            g2d.setStroke(new BasicStroke(i.getStroke()));
+            g2d.draw(i.getShape());
+        }
+    }
+    
+    /**
+     * 
+     * @param thePerfect new perfect shapes.
+     */
+    public void setPrefectShape(final boolean thePerfect) {
+        myPerfectShape = thePerfect;
+    }
+    
+ // Inner Class
+
+    /**
+     * Listens for mouse clicks, to draw on our panel.
+     */
+    private class MyMouseListener extends MouseInputAdapter {
+        /**
+         * Handles a click event.
+         * 
+         * @param theEvent The event.
+         */
+        @Override
+        public void mouseDragged(final MouseEvent theEvent) {
+            repaint();
+            myPath = myTool.getDragged(theEvent.getPoint());
+        }
+        
+        /**
+         * Handles a click event.
+         * 
+         * @param theEvent The event.
+         */
+        @Override
+        public void mousePressed(final MouseEvent theEvent) {
+            System.out.println(myPerfectShape);
+            myPath = myTool.getPressed(theEvent.getPoint(), myPerfectShape);
+            myDrawnShapes.add(new Shapes(myTool.getShape(), myColor, myStroke));
+
+        }
+        
+        /**
+         * Handles a click event.
+         * 
+         * @param theEvent The event.
+         */
+        @Override
+        public void mouseReleased(final MouseEvent theEvent) {
+            myPath = myTool.getReleased(theEvent.getPoint());
+            repaint();
+            myTool.newConstructor();
+        }
+    }
+    
+}

@@ -1,0 +1,23 @@
+package model;
+
+import java.awt.Shape;
+import java.awt.geom.Point2D;
+
+/**
+ * 
+ * @author mohibkohi
+ * @version 1.0.
+ */
+public interface Tool {
+
+    
+    public Shape getPressed(final Point2D the2DPoint, final boolean thePerfect);
+    
+    public Shape getDragged(final Point2D the2DPoint);
+    
+    public Shape getReleased(final Point2D the2DPoint);
+    
+    public Shape getShape();
+    
+    public void newConstructor();
+}

@@ -1,0 +1,64 @@
+/*
+ * TCSS 305 - Pencil
+ * 
+ */
+
+package model;
+
+import java.awt.Shape;
+import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
+
+/**
+ * Pencil class.
+ * 
+ * @author mohibkohi
+ * @version 1.0.
+ */
+public class Pencil extends AbstractTool implements Tool {
+
+    /**
+     * The path being created.
+     */
+    private final Path2D myPath;
+
+    /**
+     * Constructor pencil. Set my path to new path double.
+     */
+    public Pencil() {
+        myPath = new Path2D.Double();
+    }
+
+    /**
+     * @param thePoint to draw the shape.
+     */
+    public void setDragged(final Point2D thePoint) {
+        myPath.lineTo(thePoint.getX(), thePoint.getY());
+    }
+
+    /**
+     * @param thePoint to start drawing the shape.
+     * @param thePerfect perfect shape.
+     */
+    public void setPressed(final Point2D thePoint, final boolean thePerfect) {
+        myPath.moveTo(thePoint.getX(), thePoint.getY());
+    }
+
+    /**
+     * Return the shape.
+     * 
+     * @return myPath the path.
+     */
+    public Shape getShape() {
+        return myPath;
+    }
+
+    /**
+     * Return the name of the shape.
+     * 
+     * @return string representation of the shape.
+     */
+    public String toString() {
+        return "Pencil";
+    }
+}

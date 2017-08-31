@@ -1,0 +1,43 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package model;
+
+import java.awt.Color;
+import java.awt.Shape;
+
+/**
+ *
+ * @author mohibkohi
+ */
+public class Shapes {
+    
+    final private Shape myShape;
+    
+    final private Color myColor;
+    
+    final private int myStroke;
+    
+    
+    public Shapes(final Shape theShape, final Color theColor, final int theStroke) {
+        myShape = theShape;
+        myColor = theColor;
+        myStroke = theStroke;
+        
+    }
+    
+    public Shape getShape() {
+        return myShape;
+    }
+    
+    public Color getColor() {
+        return myColor;
+    }
+    
+    public int getStroke() {
+        return myStroke;
+    }
+    
+}

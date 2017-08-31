@@ -1,0 +1,74 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package model;
+
+import java.awt.Shape;
+import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
+
+/**
+ *
+ * @author mohibkohi
+ */
+public class Pencil extends AbstractTool implements Tool {
+     /**
+     * Start point for the Line.
+     */
+    private Point2D myStart;
+    
+    /**
+     * End point for the Line.
+     */
+    private Point2D myEnd;
+    
+    /**
+     * myMiddle point for the point.
+     */
+    private Point2D myMiddle;
+    
+    /**
+     * Set my perfect shape.
+     */
+    private boolean myPerfectShape;
+    
+    /**
+     * The path being created.
+     */
+    private Path2D myPath;
+    
+    public Pencil() {
+       // myDrawArea = new DrawingPanel();
+        myPath = new Path2D.Double();
+    }
+    
+    public Shape getDragged(final Point2D the2DPoint) {
+        myPath.lineTo(the2DPoint.getX(), the2DPoint.getY());
+        //myPath.setLine(myStart, the2DPoint);
+        return myPath;
+    }
+    
+    public Shape getPressed(final Point2D the2DPoint, final boolean thePerfect) {
+        myPerfectShape = thePerfect;
+        myPath.moveTo(the2DPoint.getX(), the2DPoint.getY());
+        //myPath.setLine(myStart, myMiddle);
+        //myStart = the2DPoint;
+        return myPath;
+    }
+    
+    public Shape getReleased(final Point2D the2DPoint) {
+        //myEnd = the2DPoint;
+        //myPath.setLine(myStart, myEnd);
+        return myPath;
+    }
+    public Shape getShape() {
+        return myPath;
+    }
+    
+    public void newConstructor() {
+        Pencil pnecil = new Pencil();
+        myPath = pnecil.myPath;
+    }
+}

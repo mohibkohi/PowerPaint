@@ -1,0 +1,84 @@
+/*
+ * TCSS 305 - MyMouseListener
+ * 
+ */
+package listeners;
+
+import java.awt.event.MouseEvent;
+
+import javax.swing.event.MouseInputAdapter;
+
+import model.Shapes;
+import model.Tool;
+import view.DrawingPanel;
+
+/**
+ * Listens for mouse clicks, to draw on our panel.
+ * 
+ * @author mohibkohi
+ * @version 1.0.
+ */
+public class MyMouseListener extends MouseInputAdapter {
+
+    /**
+     * Current tool.
+     */
+    private Tool myTool;
+
+    /**
+     * Drawing area.
+     */
+    private final DrawingPanel myDrawingPanel;
+
+    /**
+     * Constructor sets the current tool and initializes myDrawingArea.
+     * 
+     * @param thePanel to draw on.
+     * 
+     */
+    public MyMouseListener(final DrawingPanel thePanel) {
+        super();
+        myDrawingPanel = thePanel;
+        myTool = thePanel.getTool();
+    }
+
+    /**
+     * Handles a click event.
+     * 
+     * @param theEvent The event.
+     */
+    @Override
+    public void mousePressed(final MouseEvent theEvent) {
+        myTool = myDrawingPanel.getTool();
+        // create new reference
+        myTool = myDrawingPanel.newTool(myTool.toString());
+        myTool.setPressed(theEvent.getPoint(), myDrawingPanel.isPrefectShape());
+        if (myDrawingPanel.getStroke() > 0) {
+            myDrawingPanel.addShape(new Shapes(myTool.getShape(), myDrawingPanel.getColor(),
+                                               myDrawingPanel.getStroke()));
+        }
+
+    }
+
+    /**
+     * Handles a click event.
+     * 
+     * @param theEvent The event.
+     */
+    @Override
+    public void mouseDragged(final MouseEvent theEvent) {
+        myDrawingPanel.repaint();
+        myTool.setDragged(theEvent.getPoint());
+
+    }
+
+    /**
+     * Handles a click event.
+     * 
+     * @param theEvent The event.
+     */
+    @Override
+    public void mouseReleased(final MouseEvent theEvent) {
+        myDrawingPanel.repaint();
+    }
+}

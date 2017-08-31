@@ -1,0 +1,31 @@
+package model;
+
+import javax.swing.event.MouseInputAdapter;
+
+/**
+ * Abstract class shpae.
+ * @author mohibkohi
+ * @version 1.0.
+ */
+public abstract class AbstractTool extends MouseInputAdapter implements Tool {
+
+//    /**
+//     * Paints the current path.
+//     * 
+//     * @param theGraphics The graphics context to use for painting.
+//     */
+//    @Override
+//    public void paintComponent(final Graphics theGraphics) {
+//        super.paintComponent(theGraphics);
+//        final Graphics2D g2d = (Graphics2D) theGraphics;
+//        
+//        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+//                             RenderingHints.VALUE_ANTIALIAS_ON);
+//        final Color colorPurple = new Color(51, 0, 111);
+//        g2d.setPaint(colorPurple);
+//        g2d.setStroke(new BasicStroke(LINE_WIDTH));
+//        if (myMousePressed) {
+//            g2d.draw(myPath);
+//        }
+//    }
+}

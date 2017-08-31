@@ -1,0 +1,36 @@
+/*
+ * TCSS 305 - AbstractTool
+ * 
+ */
+
+package model;
+
+import java.awt.geom.Point2D;
+
+import javax.swing.event.MouseInputAdapter;
+
+/**
+ * Abstract class shpae.
+ * 
+ * @author mohibkohi
+ * @version 1.0.
+ */
+public abstract class AbstractTool extends MouseInputAdapter implements Tool {
+
+    /**
+     * Start point for the Line.
+     */
+    protected Point2D myStart;
+
+    /**
+     * End point for the Line.
+     */
+    protected Point2D myEnd;
+
+    /**
+     * Empty constructor.
+     */
+    protected AbstractTool() {
+    }
+
+}
